@@ -1,47 +1,106 @@
 'use client'
 
-import { Canvas, extend } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { 
   OrbitControls,
   Environment,
   PerspectiveCamera,
-  Stars
+  Float,
+  Icosahedron,
+  Octahedron,
+  Dodecahedron,
+  Sphere
 } from '@react-three/drei'
-import { Color, DirectionalLight, AmbientLight, Group } from 'three'
-import Model3D from './Model3D'
+import { MeshDistortMaterial } from '@react-three/drei'
 
-extend({ Color, DirectionalLight, AmbientLight, Group })
+interface SceneProps {
+  type?: 'frontend' | 'react' | 'backend' | 'fullstack'
+}
 
-export default function Scene() {
+export default function Scene({ type = 'frontend' }: SceneProps) {
+  const getGeometry = () => {
+    switch (type) {
+      case 'frontend':
+        return (
+          <Icosahedron args={[1, 0]}>
+            <MeshDistortMaterial
+              color="#38bdf8"
+              attach="material"
+              distort={0.3}
+              speed={2}
+              roughness={0}
+              metalness={0.8}
+            />
+          </Icosahedron>
+        )
+      case 'react':
+        return (
+          <Octahedron args={[1, 0]}>
+            <MeshDistortMaterial
+              color="#61dafb"
+              attach="material"
+              distort={0.3}
+              speed={2}
+              roughness={0}
+              metalness={0.8}
+            />
+          </Octahedron>
+        )
+      case 'backend':
+        return (
+          <Dodecahedron args={[1, 0]}>
+            <MeshDistortMaterial
+              color="#4ade80"
+              attach="material"
+              distort={0.3}
+              speed={2}
+              roughness={0}
+              metalness={0.8}
+            />
+          </Dodecahedron>
+        )
+      case 'fullstack':
+        return (
+          <Sphere args={[1, 32, 32]}>
+            <MeshDistortMaterial
+              color="#f472b6"
+              attach="material"
+              distort={0.3}
+              speed={2}
+              roughness={0}
+              metalness={0.8}
+            />
+          </Sphere>
+        )
+    }
+  }
+
   return (
     <Canvas>
       <PerspectiveCamera makeDefault position={[3, 3, 3]} />
       
-      <color attach="background" args={['#000']} />
-      
-      <Stars
-        radius={100}
-        depth={50}
-        count={5000}
-        factor={4}
-        saturation={0}
-        fade
-      />
+      <color attach="background" args={['transparent']} />
       
       <Environment preset="sunset" />
       
       <ambientLight intensity={0.5} />
       <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
       
-      <group position={[0, 0, 0]}>
-        <Model3D />
-      </group>
+      <Float
+        speed={2}
+        rotationIntensity={2}
+        floatIntensity={1}
+      >
+        {getGeometry()}
+      </Float>
       
       <OrbitControls 
         enablePan={false}
-        enableZoom={true}
+        enableZoom={false}
         maxPolarAngle={Math.PI / 2}
-        minPolarAngle={Math.PI / 4}
+        minPolarAngle={Math.PI / 3}
+        autoRotate
+        autoRotateSpeed={2}
       />
     </Canvas>
   )

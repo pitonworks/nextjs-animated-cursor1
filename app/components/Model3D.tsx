@@ -2,46 +2,26 @@
 
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { useSpring } from '@react-spring/three'
-import { Mesh, Vector3 } from 'three'
-import { Box, MeshDistortMaterial } from '@react-three/drei'
+import { Sphere, MeshDistortMaterial } from '@react-three/drei'
 
 export default function Model3D() {
-  const meshRef = useRef<Mesh>(null)
-  const [springs, api] = useSpring(() => ({
-    scale: [1, 1, 1] as [number, number, number],
-    rotation: [0, 0, 0] as [number, number, number],
-    config: { mass: 1, tension: 170, friction: 26 },
-  }))
+  const meshRef = useRef<any>()
 
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      meshRef.current.rotation.y += delta * 0.5
-    }
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    meshRef.current.distort = 0.3 + Math.sin(time) * 0.2
   })
 
-  const handleClick = () => {
-    const currentScale = springs.scale.get()[0]
-    api.start({
-      scale: currentScale === 1 ? [1.5, 1.5, 1.5] : [1, 1, 1],
-      rotation: [0, springs.rotation.get()[1] + Math.PI, 0],
-    })
-  }
-
   return (
-    <Box
-      ref={meshRef}
-      args={[1, 1, 1]}
-      onClick={handleClick}
-      scale={springs.scale.get()}
-      rotation={springs.rotation.get()}
-    >
+    <Sphere ref={meshRef} args={[1, 64, 64]}>
       <MeshDistortMaterial
-        color="#00ff88"
+        color="#38bdf8"
+        attach="material"
+        distort={0.5}
         speed={2}
-        distort={0.3}
-        radius={1}
+        roughness={0}
+        metalness={0.8}
       />
-    </Box>
+    </Sphere>
   )
 } 
